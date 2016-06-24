@@ -24,10 +24,6 @@ public class SQLWorker {
 
 
     public SQLWorker() {
-/*        dbUrl = System.getenv("dbUrl");
-        dbName = System.getenv("dbName");
-        dbUser = System.getenv("dbUser");
-        dbPassword = System.getenv("dbPassword");*/
         dbUrl = Properties.getDbUrl();
         dbName = Properties.getDbName();
         dbUser = Properties.getDbUser();
@@ -42,9 +38,7 @@ public class SQLWorker {
 
     public void work() throws SQLException, ClassNotFoundException, IllegalAccessException, InstantiationException {
         // load driver
-//         Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver").newInstance();
             DriverManager.registerDriver(new com.microsoft.sqlserver.jdbc.SQLServerDriver());
-//        DriverManager.registerDriver(new net.sourceforge.jtds.jdbc.Driver());
         // connecting
         connection = DriverManager.getConnection(dbUrl + dbName, dbUser, dbPassword);
 
@@ -55,13 +49,11 @@ public class SQLWorker {
             System.exit(0);
         }
 
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
         logger.info("Auto commit: " + connection.getAutoCommit());
 
         String query = "SELECT db_name() AS CurrentDataBase";
-        preparedStatement = connection.prepareStatement(query);
-        resultSet = preparedStatement.executeQuery();
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        ResultSet resultSet = preparedStatement.executeQuery();
         if (resultSet.next()) {
             logger.info("Current database: " + resultSet.getString(1));
         }
@@ -71,11 +63,6 @@ public class SQLWorker {
         getDocuments(FPApp2.documents);
         fillDocuments(FPApp2.documents);
 
-//        release in functions
-//        close connection
-//        if(resultSet != null) resultSet.close();
-//        if(preparedStatement != null) preparedStatement.close();
-//        if(connection != null) connection.close();
     } // end work()
 
     private void getDocuments(ArrayList<Document> documents) {
@@ -83,27 +70,26 @@ public class SQLWorker {
         ResultSet resultSet = null;
         String query = "SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED \n" +
                 "SELECT ORDERSTRADE.ID " +
-                ",ORDERSTRADE.FDATE " +
-                ",ORDERSTRADE.TOID " +
-                ",ORDERSTRADE.MONEYID " +
-                ",ORDERSTRADE.STATE " +
-                ",ISNULL(ORDERSTRADEMARKS.TEXT, '') AS TEXT " +
-                ",ORDERSTRADESALE.CLIENTID " +
-                ",a1.agentname " +
-                ",ORDERSTRADE.SHIFTID " +
-                ",ORDERSTRADE.PUBLISHER" +
-                ",ORDERSTRADESALE.EDISTATUS" +
-                ",ORDERSTRADESALE.GROUPORDERID " +
+                    ",ORDERSTRADE.FDATE " +
+                    ",ORDERSTRADE.TOID " +
+                    ",ORDERSTRADE.MONEYID " +
+                    ",ORDERSTRADE.STATE " +
+                    ",ISNULL(ORDERSTRADEMARKS.TEXT, '') AS TEXT " +
+                    ",ORDERSTRADESALE.CLIENTID " +
+                    ",a1.agentname " +
+                    ",ORDERSTRADE.SHIFTID " +
+                    ",ORDERSTRADE.PUBLISHER" +
+                    ",ORDERSTRADESALE.EDISTATUS" +
+                    ",ORDERSTRADESALE.GROUPORDERID " +
                 "FROM ORDERSTRADE " +
-                "LEFT JOIN ORDERSTRADEMARKS ON ORDERSTRADE.ID  = ORDERSTRADEMARKS.ITEMID " +
-                "LEFT JOIN ORDERSTRADESALE  ON ORDERSTRADE.ID  = ORDERSTRADESALE.ITEMID " +
-                "INNER JOIN Agents as A1 on ORDERSTRADESALE.CLIENTID = A1.agentid " +
+                    "LEFT JOIN ORDERSTRADEMARKS ON ORDERSTRADE.ID  = ORDERSTRADEMARKS.ITEMID " +
+                    "LEFT JOIN ORDERSTRADESALE  ON ORDERSTRADE.ID  = ORDERSTRADESALE.ITEMID " +
+                    "INNER JOIN Agents as A1 on ORDERSTRADESALE.CLIENTID = A1.agentid " +
                 "WHERE ORDERSTRADE.FDATE BETWEEN  CONVERT(date, getdate()) AND DATEADD(day, 5, GETDATE()) " +
-//                "WHERE ORDERSTRADE.FDATE BETWEEN  '2016-06-22' AND '2016-06-23' " +  //debug condition
-                "AND DIRECTID = 0  " +
-                "AND ORDERSTRADE.PUBLISHER IN (1,11) " +
-                "and a1.agentid = 44728 " +
-                "AND EDISTATUS = 0 " +
+                    "AND DIRECTID = 0  " +
+                    "AND ORDERSTRADE.PUBLISHER IN (1,11) " +
+                    "and a1.agentid = 44728 " +
+                    "AND EDISTATUS = 0 " +
                 "ORDER BY ORDERSTRADE.ID";
 
         try {
@@ -183,7 +169,7 @@ public class SQLWorker {
                 long id;
                 String name;
                 Measure measure; // кг или шт
-                BigDecimal quantity = null; //целое или вещественное (3 знака после запятой)
+                BigDecimal quantity; //целое или вещественное (3 знака после запятой)
 
 
                 id = resultSet.getLong("kievId");
@@ -197,19 +183,10 @@ public class SQLWorker {
                         measure = Measure.PC;
                         break;
                 }
-// in case CAST(QTYI as nvarchar(10)) AS QTYI " -> "QTYI"
-                    /*switch (measure) {
-                        case KILO:
-                            quantity = new BigDecimal(resultSet.getString("QTYI")).setScale(3, RoundingMode.HALF_UP);
-                            break;
-                        case PC:
-                            quantity = new BigDecimal(resultSet.getString("QTYI")).setScale(0, RoundingMode.HALF_UP);
-                            break;
-                    }*/
+
                 quantity = new BigDecimal(resultSet.getString("QTYI"));
 
                 logger.trace("Product # " + (products.size() + 1) + "\t" + "weight" + resultSet.getString("QTYI"));
-//                logger.trace(quantity);
                 //saving to array
                 Product product = new Product(id, name, measure, quantity);
                 products.add(product);
@@ -223,7 +200,7 @@ public class SQLWorker {
     } // end fillDocuments()
 
     public void updateDocumentsStatuses(ArrayList<Document> documents) throws SQLException { // after all actions with db, xml, upload
-        PreparedStatement preparedStatement = null;
+        PreparedStatement preparedStatement;
 
 //        1. make string with documents numbers
         String documentsNumbers = makeDocumentsNumbersString(documents);
@@ -238,6 +215,7 @@ public class SQLWorker {
 
         logger.debug("updateDocumentsStatuses() success");
         closePreparedStatement(preparedStatement);
+        closeConnection();
     } // end updateDocumentsStatuses()
 
     private void closeConnection() throws SQLException {

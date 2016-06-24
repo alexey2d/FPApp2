@@ -27,11 +27,6 @@ public class FTPUploader {
 
 
     public FTPUploader() {
-//        ftpUrl = System.getenv("ftpUrl");
-//        ftpFolder = System.getenv("ftpFolder");
-//        ftpUser = System.getenv("ftpUser");
-//        ftpPassword = System.getenv("ftpPassword");
-
         ftpUrl = Properties.getFtpUrl();
         ftpFolder = Properties.getFtpFolder();
         ftpUser = Properties.getFtpUser();
@@ -73,7 +68,6 @@ public class FTPUploader {
             logger.error("FTP", ioEx);
             throw ioEx;
         }
-
 
         if (ftpClient.isConnected()) {
             ftpClient.logout();
