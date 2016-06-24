@@ -112,7 +112,6 @@ public class XMLCreator {
     }
 
     private String setLocalFileName(String fileName) {
-        // String fileName = "supplies.xml"; // test string for debug
         // 1 - get file in name and extension
         int fileNameLength = fileName.length();
         String fileNameOnly = fileName.substring(0, fileNameLength - 4);
@@ -121,7 +120,6 @@ public class XMLCreator {
         // 2 - get current date and time
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
         Date date = new Date();
-//        System.out.println(dateFormat.format(date)); //2014/08/06 15:59:48
 
         // 3 - out fileNameOnly + date + fileExtension
         String localFileName = fileNameOnly + "_" + dateFormat.format(date) + fileExtension;

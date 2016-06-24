@@ -71,7 +71,7 @@ public class SQLWorker {
         getDocuments(FPApp2.documents);
         fillDocuments(FPApp2.documents);
 
-
+//        release in functions
 //        close connection
 //        if(resultSet != null) resultSet.close();
 //        if(preparedStatement != null) preparedStatement.close();
@@ -197,7 +197,7 @@ public class SQLWorker {
                         measure = Measure.PC;
                         break;
                 }
-
+// in case CAST(QTYI as nvarchar(10)) AS QTYI " -> "QTYI"
                     /*switch (measure) {
                         case KILO:
                             quantity = new BigDecimal(resultSet.getString("QTYI")).setScale(3, RoundingMode.HALF_UP);
