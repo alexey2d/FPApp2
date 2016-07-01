@@ -98,7 +98,8 @@ public class SQLWorker {
                 "LEFT JOIN ORDERSTRADEMARKS ON ORDERSTRADE.ID  = ORDERSTRADEMARKS.ITEMID " +
                 "LEFT JOIN ORDERSTRADESALE  ON ORDERSTRADE.ID  = ORDERSTRADESALE.ITEMID " +
                 "INNER JOIN Agents as A1 on ORDERSTRADESALE.CLIENTID = A1.agentid " +
-                "WHERE ORDERSTRADE.FDATE BETWEEN  DATEADD(day, -1, CONVERT(date, getdate())) AND DATEADD(day, 5, GETDATE()) " +
+                "WHERE ORDERSTRADE.FDATE BETWEEN  DATEADD(day, -1, CONVERT(date, getdate())) " +
+                    "AND DATEADD(day, 5, GETDATE()) " +
 //                "WHERE ORDERSTRADE.FDATE BETWEEN  '2016-06-22' AND '2016-06-23' " +  //debug condition
                 "AND DIRECTID = 0  " +
                 "AND ORDERSTRADE.PUBLISHER IN (1,11) " +
